@@ -21,49 +21,69 @@
     <canvas id="canvas"></canvas>
 
     <script>
-        // Set up the Three.js scene and camera
-        var scene = new THREE.Scene();
-        var params = {
-            fov: 100 // Add the fov property here
-        };
-        var camera = new THREE.PerspectiveCamera(params.fov, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.z = 100;
+// Set up the Three.js scene and camera
+var scene = new THREE.Scene();
+var params = {
+    fov: 100, // Add the fov property here
+    numBirds: 800 // Add the numBirds property here
+};
+var camera = new THREE.PerspectiveCamera(params.fov, window.innerWidth / window.innerHeight, 1, 1000);
+camera.position.z = 100;
 
-        var canvas = document.getElementById('canvas');
-        var canvasWidth = canvas.clientWidth;
-        var canvasHeight = canvas.clientHeight;
+var canvas = document.getElementById('canvas');
+var canvasWidth = canvas.clientWidth;
+var canvasHeight = canvas.clientHeight;
 
-        // Create a group of bird objects
-        var birds = [];
-        for (var i = 0; i < 800; i++) {
-            var geometry = new THREE.SphereGeometry(1, 8, 6);
-            var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-            var bird = new THREE.Mesh(geometry, material);
-            bird.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
-            bird.velocity = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
-            bird.acceleration = new THREE.Vector3();
-            birds.push(bird);
-            scene.add(bird);
-        }
+// Create a group of bird objects
+var birds = [];
+for (var i = 0; i < params.numBirds; i++) { // Use the numBirds property here
+    var geometry = new THREE.SphereGeometry(1, 8, 6);
+    var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    var bird = new THREE.Mesh(geometry, material);
+    bird.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
+    bird.velocity = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+    bird.acceleration = new THREE.Vector3();
+    birds.push(bird);
+    scene.add(bird);
+}
 
-        // Implement flocking behaviors
-        var separationDistance = 10;
-        var alignmentDistance = 20;
-        var cohesionDistance = 20;
-        var maxSpeed = 2;
-        var maxForce = 0.05;
+// Implement flocking behaviors
+var separationDistance = 10;
+var alignmentDistance = 20;
+var cohesionDistance = 20;
+var maxSpeed = 2;
+var maxForce = 0.05;
 
-        // Create the dat.gui interface
-        var gui = new dat.GUI();
-        gui.add(window, 'separationDistance', 0, 50).name('Separation Distance');
-        gui.add(window, 'alignmentDistance', 0, 50).name('alignmentDistance');
-        gui.add(window, 'cohesionDistance', 0, 50).name('cohesionDistance');
-        gui.add(window, 'maxSpeed', 0, 5).name('maxSpeed');
-        gui.add(window, 'maxForce', 0, 1).step(0.001).name('maxForce');
-        gui.add(params, 'fov', 0, 150).name('FOV').onChange(function(value) {
-            camera.fov = value;
-            camera.updateProjectionMatrix();
-        });
+// Create the dat.gui interface
+var gui = new dat.GUI();
+gui.add(window, 'separationDistance', 0, 50).name('Separation Distance');
+gui.add(window, 'alignmentDistance', 0, 50).name('alignmentDistance');
+gui.add(window, 'cohesionDistance', 0, 50).name('cohesionDistance');
+gui.add(window, 'maxSpeed', 0, 5).name('maxSpeed');
+gui.add(window, 'maxForce', 0, 1).step(0.001).name('maxForce');
+gui.add(params, 'fov', 0, 150).name('FOV').onChange(function(value) {
+    camera.fov = value;
+    camera.updateProjectionMatrix();
+});
+gui.add(params, 'numBirds', 1, 1000, 1).name('Number of birds').onChange(function(value) {
+    // Remove existing birds from the scene
+    birds.forEach(function(bird) {
+        scene.remove(bird);
+    });
+
+    // Add new birds to the scene
+    birds = [];
+    for (var i = 0; i < value; i++) {
+        var geometry = new THREE.SphereGeometry(1, 8, 6);
+        var material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        var bird = new THREE.Mesh(geometry, material);
+        bird.position.set(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
+        bird.velocity = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+        bird.acceleration = new THREE.Vector3();
+        birds.push(bird);
+        scene.add(bird);
+    }
+});
 
         function updateBirds() {
             for (var i = 0; i < birds.length; i++) {
