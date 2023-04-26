@@ -23,7 +23,10 @@
     <script>
         // Set up the Three.js scene and camera
         var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 1000);
+        var params = {
+            fov: 100 // Add the fov property here
+        };
+        var camera = new THREE.PerspectiveCamera(params.fov, window.innerWidth / window.innerHeight, 1, 1000);
         camera.position.z = 100;
 
         var canvas = document.getElementById('canvas');
@@ -57,7 +60,10 @@
         gui.add(window, 'cohesionDistance', 0, 50).name('cohesionDistance');
         gui.add(window, 'maxSpeed', 0, 5).name('maxSpeed');
         gui.add(window, 'maxForce', 0, 1).step(0.001).name('maxForce');
-        
+        gui.add(params, 'fov', 0, 150).name('FOV').onChange(function(value) {
+            camera.fov = value;
+            camera.updateProjectionMatrix();
+        });
 
         function updateBirds() {
             for (var i = 0; i < birds.length; i++) {
