@@ -65,7 +65,7 @@ gui.add(params, 'fov', 0, 150).name('FOV').onChange(function(value) {
     camera.fov = value;
     camera.updateProjectionMatrix();
 });
-gui.add(params, 'numBirds', 1, 1000, 1).name('Number of birds').onChange(function(value) {
+gui.add(params, 'numBirds', 1, 10000, 1).name('Number of birds').onChange(function(value) {
     // Remove existing birds from the scene
     birds.forEach(function(bird) {
         scene.remove(bird);
